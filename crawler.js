@@ -70,7 +70,7 @@ const crawler = async () => {
                     .find('.price').text().trim()||'N/A'; 
                     
                     ProductData.push(products);//pushing the data
-                });
+                })
             }
 
         } catch (error) {
