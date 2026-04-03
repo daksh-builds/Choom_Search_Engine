@@ -2,7 +2,9 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import fs from 'fs';
 // specify the URL of the site to crawl
-const targetUrl = 'https://www.scrapingcourse.com/ecommerce/';
+
+const crawler = async () => {
+    const targetUrl = 'https://www.scrapingcourse.com/ecommerce/';
 
 // add the target URL to an array of URLs to visit
 let urlsToVisit = [targetUrl];
@@ -12,7 +14,6 @@ const maxCrawlLength = 20;
 
 const ProductData=[];
 // define a crawler function
-const crawler = async () => {
     // track the number of crawled URLs
     let crawledCount = 0;
 
@@ -94,5 +95,4 @@ console.log("file successfully created 👌");
 
 };
 
-//Testing
-crawler();
+export default crawler;
