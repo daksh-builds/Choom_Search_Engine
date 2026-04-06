@@ -7,7 +7,7 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import fs from 'fs';
 
-import crawler from './crawler.js';
+import crawler from './src/crawler.js';
 dotenv.config();
 
 const app = express();
