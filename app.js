@@ -4,7 +4,8 @@ import path from 'path';
 import axios from "axios";
 import * as cheerio from "cheerio";
 
-
+import connecting from './src/controller/connect.js';
+import pool from './db/db.js'; 
 import Mainroute from './src/routes/home.js';
 import crawler from './src/crawler.js';
 dotenv.config();
@@ -14,6 +15,9 @@ const PORT = process.env.PORT || 3000;
 
 app.set('view engine','ejs');
 app.set('views','./views');
+
+//database connection
+connecting();
 
 app.use('/api',Mainroute);
 
