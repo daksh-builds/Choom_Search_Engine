@@ -1,9 +1,9 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
-
+import pool from '../../db/db.js';
 // ---- CONFIG ----
 const seed = "https://en.wikipedia.org/wiki/Wiki";
-const maxCrawls = 200;
+const maxCrawls = 10;
 
 // ---- DATA STRUCTURES ----
 let queue = [seed];

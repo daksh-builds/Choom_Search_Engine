@@ -1,34 +1,410 @@
-<!-- views/index.ejs -->
+REFERENCE FRONT PAGE
+
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
 <head>
-  <title>CSV Data</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CHOOM</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --neon-red: #ff2020;
+      --neon-yellow: #ffe600;
+      --neon-green: #39ff14;
+      --bg: #000000;
+      --glow-red: 0 0 8px #ff2020, 0 0 20px #ff2020, 0 0 40px #ff2020;
+      --glow-yellow: 0 0 8px #ffe600, 0 0 20px #ffe600, 0 0 40px #ffe600;
+      --glow-green: 0 0 8px #39ff14, 0 0 20px #39ff14, 0 0 40px #39ff14;
+    }
+
+    body {
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Share Tech Mono', monospace;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Scanline overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.15) 2px,
+        rgba(0, 0, 0, 0.15) 4px
+      );
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* Grid background */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(57,255,20,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(57,255,20,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 40px;
+      width: 100%;
+      max-width: 720px;
+      padding: 20px;
+    }
+
+    /* ─── CHOOM LOGO ─── */
+    .logo-wrap {
+      position: relative;
+      display: inline-block;
+      line-height: 1;
+    }
+
+    .choom-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: clamp(64px, 14vw, 120px);
+      letter-spacing: 0.08em;
+      position: relative;
+      display: inline-block;
+      animation: colorCycle 3s linear infinite;
+    }
+
+    /* Each letter cycles through neon colors with offset */
+    .choom-logo .c { animation: letterC 3s linear infinite; }
+    .choom-logo .h { animation: letterH 3s linear infinite; }
+    .choom-logo .o1 { animation: letterO1 3s linear infinite; }
+    .choom-logo .o2 { animation: letterO2 3s linear infinite; }
+    .choom-logo .m { animation: letterM 3s linear infinite; }
+
+    @keyframes letterC {
+      0%,100% { color: var(--neon-red); text-shadow: var(--glow-red); }
+      33%      { color: var(--neon-yellow); text-shadow: var(--glow-yellow); }
+      66%      { color: var(--neon-green); text-shadow: var(--glow-green); }
+    }
+    @keyframes letterH {
+      0%,100% { color: var(--neon-yellow); text-shadow: var(--glow-yellow); }
+      33%      { color: var(--neon-green); text-shadow: var(--glow-green); }
+      66%      { color: var(--neon-red); text-shadow: var(--glow-red); }
+    }
+    @keyframes letterO1 {
+      0%,100% { color: var(--neon-green); text-shadow: var(--glow-green); }
+      33%      { color: var(--neon-red); text-shadow: var(--glow-red); }
+      66%      { color: var(--neon-yellow); text-shadow: var(--glow-yellow); }
+    }
+    @keyframes letterO2 {
+      0%,100% { color: var(--neon-red); text-shadow: var(--glow-red); }
+      33%      { color: var(--neon-green); text-shadow: var(--glow-green); }
+      66%      { color: var(--neon-yellow); text-shadow: var(--glow-yellow); }
+    }
+    @keyframes letterM {
+      0%,100% { color: var(--neon-yellow); text-shadow: var(--glow-yellow); }
+      33%      { color: var(--neon-red); text-shadow: var(--glow-red); }
+      66%      { color: var(--neon-green); text-shadow: var(--glow-green); }
+    }
+
+    /* Electric flicker */
+    .logo-wrap::before {
+      content: 'CHOOM';
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: clamp(64px, 14vw, 120px);
+      letter-spacing: 0.08em;
+      position: absolute;
+      top: 0; left: 0;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(255, 230, 0, 0.15);
+      animation: glitch 4s infinite;
+      pointer-events: none;
+    }
+
+    @keyframes glitch {
+      0%,90%,100% { transform: translate(0,0); opacity: 0; }
+      91%          { transform: translate(-4px, 2px); opacity: 0.6; }
+      92%          { transform: translate(4px,-2px); opacity: 0; }
+      93%          { transform: translate(-2px,-4px); opacity: 0.4; }
+      94%          { transform: translate(0,0); opacity: 0; }
+    }
+
+    /* Spark burst rings */
+    .spark-ring {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 100%; height: 100%;
+      transform: translate(-50%,-50%);
+      border-radius: 50%;
+      animation: spark 3s ease-out infinite;
+      pointer-events: none;
+    }
+    .spark-ring:nth-child(1) { border: 2px solid var(--neon-red); animation-delay: 0s; }
+    .spark-ring:nth-child(2) { border: 2px solid var(--neon-yellow); animation-delay: 1s; }
+    .spark-ring:nth-child(3) { border: 2px solid var(--neon-green); animation-delay: 2s; }
+
+    @keyframes spark {
+      0%   { transform: translate(-50%,-50%) scale(0.4); opacity: 0.8; }
+      100% { transform: translate(-50%,-50%) scale(2.2); opacity: 0; }
+    }
+
+    /* Tagline */
+    .tagline {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(57,255,20,0.55);
+      margin-top: -28px;
+      animation: pulse 2s ease-in-out infinite alternate;
+    }
+    @keyframes pulse {
+      from { opacity: 0.4; }
+      to   { opacity: 0.9; }
+    }
+
+    /* ─── SEARCH BAR ─── */
+    .search-form {
+      width: 100%;
+      position: relative;
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background: rgba(255,255,255,0.04);
+      border: 1.5px solid rgba(57,255,20,0.35);
+      border-radius: 50px;
+      padding: 14px 22px;
+      gap: 14px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      backdrop-filter: blur(6px);
+    }
+
+    .search-bar:focus-within {
+      border-color: var(--neon-green);
+      box-shadow: 0 0 12px rgba(57,255,20,0.3), inset 0 0 12px rgba(57,255,20,0.05);
+    }
+
+    .search-icon {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      color: rgba(57,255,20,0.6);
+    }
+
+    .search-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 16px;
+      color: #e0ffe0;
+      caret-color: var(--neon-green);
+      letter-spacing: 0.04em;
+    }
+
+    .search-input::placeholder {
+      color: rgba(255,255,255,0.3);
+      font-style: normal;
+    }
+
+    .mic-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: rgba(255,255,255,0.4);
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .mic-btn:hover {
+      color: var(--neon-yellow);
+      filter: drop-shadow(0 0 6px var(--neon-yellow));
+    }
+
+    /* ─── SEARCH BUTTONS ─── */
+    .btn-row {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .search-btn {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      padding: 12px 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 1.5px solid;
+      transition: all 0.25s;
+      text-transform: uppercase;
+    }
+
+    .btn-primary {
+      background: transparent;
+      border-color: var(--neon-green);
+      color: var(--neon-green);
+    }
+    .btn-primary:hover {
+      background: var(--neon-green);
+      color: #000;
+      box-shadow: var(--glow-green);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border-color: var(--neon-yellow);
+      color: var(--neon-yellow);
+    }
+    .btn-secondary:hover {
+      background: var(--neon-yellow);
+      color: #000;
+      box-shadow: var(--glow-yellow);
+    }
+
+    /* ─── ADD SHORTCUT ─── */
+    .shortcut-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .shortcut-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+      border: 1.5px solid rgba(255,32,32,0.4);
+      color: var(--neon-red);
+      font-size: 28px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s;
+    }
+
+    .shortcut-btn:hover {
+      background: rgba(255,32,32,0.12);
+      border-color: var(--neon-red);
+      box-shadow: var(--glow-red);
+    }
+
+    .shortcut-label {
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+    }
+
+    /* corner decorations */
+    .corner {
+      position: fixed;
+      width: 60px; height: 60px;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .corner::before, .corner::after {
+      content: '';
+      position: absolute;
+      background: var(--neon-green);
+      box-shadow: var(--glow-green);
+    }
+    .corner::before { width: 2px; height: 100%; }
+    .corner::after  { width: 100%; height: 2px; }
+    .corner-tl { top: 20px; left: 20px; }
+    .corner-tr { top: 20px; right: 20px; transform: scaleX(-1); }
+    .corner-bl { bottom: 20px; left: 20px; transform: scaleY(-1); }
+    .corner-br { bottom: 20px; right: 20px; transform: scale(-1); }
+  </style>
 </head>
 <body>
+
+  <!-- Corner deco -->
+  <div class="corner corner-tl"></div>
+  <div class="corner corner-tr"></div>
+  <div class="corner corner-bl"></div>
+  <div class="corner corner-br"></div>
+
   <div class="container">
-    <h1>CSV Data Table</h1>
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <!-- Assuming headers are available in the first object's keys -->
-          <% if (data.length > 0) { %>
-            <% Object.keys(data[0]).forEach(function(key) { %>
-              <th><%= key %></th>
-            <% }); %>
-          <% } %>
-        </tr>
-      </thead>
-      <tbody>
-        <% data.forEach(function(row) { %>
-          <tr>
-            <% Object.values(row).forEach(function(val) { %>
-              <td><%= val %></td>
-            <% }); %>
-          </tr>
-        <% }); %>
-      </tbody>
-    </table>
+
+    <!-- LOGO -->
+    <div class="logo-wrap">
+      <div class="spark-ring"></div>
+      <div class="spark-ring"></div>
+      <div class="spark-ring"></div>
+      <div class="choom-logo">
+        <span class="c">C</span><span class="h">H</span><span class="o1">O</span><span class="o2">O</span><span class="m">M</span>
+      </div>
+    </div>
+
+    <p class="tagline">// neural search engine v1.0 //</p>
+
+    <!-- SEARCH FORM -->
+    <form class="search-form" action="<%= %>" method="GET">
+      <div class="search-bar">
+        <!-- Search icon -->
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+
+        <input
+          class="search-input"
+          type="text"
+          name="q"
+          placeholder="<%= %>"
+          autocomplete="off"
+          spellcheck="false"
+        />
+
+        <!-- Mic button -->
+    
+      </div>
+    </form>
+
+    <!-- BUTTONS -->
+    <div class="btn-row">
+    
+    </div>
+
+    <!-- ADD SHORTCUT -->
+    
+
   </div>
+
 </body>
-</html>   
+</html>
