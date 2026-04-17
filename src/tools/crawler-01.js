@@ -1,9 +1,11 @@
+import dotenv from 'dotenv';
 import axios from "axios";
 import * as cheerio from "cheerio";
 import pool from '../../db/db.js';
 // ---- CONFIG ----
+dotenv.config();
 const seed = "https://en.wikipedia.org/wiki/Wiki";
-const maxCrawls = 10;
+const maxCrawls = 100;
 
 // ---- DATA STRUCTURES ----
 let queue = [seed];
@@ -11,13 +13,14 @@ let visited = new Set();//to remore duplicates
 
 // ---- MAIN LOOP ----
 async function crawler ()  {
+  
   while (queue.length > 0 && visited.size < maxCrawls) {
-    const currentURL = queue.shift();
+    const currentURL = queue.shift();//Poping the first url and updating current url
 
     if (visited.has(currentURL)) continue;
     visited.add(currentURL);
 
-    console.log(`Crawling: ${currentURL}`);
+   
 
     try {
    const response = await axios.get(currentURL, {
@@ -26,6 +29,14 @@ async function crawler ()  {
   }
 });
       const $ = cheerio.load(response.data);
+
+let title = $('h1#firstHeading').text().trim() || 'N/A';
+let discription = $('p').first().text().trim() || 'N/A';
+
+await pool.query(
+  'INSERT INTO pages(url, title, discription) VALUES ($1, $2, $3)',
+  [currentURL, title, discription]
+);
 
       // ---- LINK EXTRACTION ----
       $("a[href]").each((i, el) => {
@@ -41,8 +52,10 @@ async function crawler ()  {
               queue.push(url);
             }
           }
+
+
         } catch (err) {
-          console.err(err.message);
+          console.error(err.message);
         }
       });
 
