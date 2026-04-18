@@ -5,9 +5,9 @@ dotenv.config({ path: './.env' });
 const pool=new Pool(
   {
     host:process.env.DB_HOST,
-    password:'mebrother30',
-    database:'choom',
-    user:'postgres',
+    password:process.env.DB_PASSWORD,
+    database:process.env.DB_NAME,
+    user:process.env.DB_USER,
     port:process.env.DB_PORT,
   }
 );
