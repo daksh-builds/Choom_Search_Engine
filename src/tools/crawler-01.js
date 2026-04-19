@@ -1,10 +1,11 @@
 import dotenv from 'dotenv';
+dotenv.config();
 import axios from "axios";
 import * as cheerio from "cheerio";
 import pool from '../../db/db.js';
 // ---- CONFIG ----
-dotenv.config();
-const seed = "https://en.wikipedia.org/wiki/Wiki";
+
+const seed = "https://quotes.toscrape.com/";
 const maxCrawls = 100;
 
 // ---- DATA STRUCTURES ----
@@ -12,7 +13,8 @@ let queue = [seed];
 let visited = new Set();//to remore duplicates
 
 // ---- MAIN LOOP ----
-async function crawler ()  {
+
+ export default async function crawler ()  {
   
   while (queue.length > 0 && visited.size < maxCrawls) {
     const currentURL = queue.shift();//Poping the first url and updating current url
@@ -30,8 +32,8 @@ async function crawler ()  {
 });
       const $ = cheerio.load(response.data);
 
-let title = $('h1#firstHeading').text().trim() || 'N/A';
-let discription = $('p').first().text().trim() || 'N/A';
+let title = $('title').text().trim() || 'N/A';
+let discription = $('.quote .text').first().text().trim() || 'N/A';
 
 await pool.query(
   'INSERT INTO pages(url, title, discription) VALUES ($1, $2, $3)',
@@ -47,7 +49,7 @@ await pool.query(
           url = new URL(url, currentURL).href;
 
           // only wikipedia domain
-          if (url.startsWith("https://en.wikipedia.org")) {
+          if (url.startsWith("https://quotes.toscrape.com/")) {
             if (!visited.has(url)) {
               queue.push(url);
             }
@@ -67,4 +69,4 @@ await pool.query(
   console.log("\nCrawling Done");
   console.log(`Total pages crawled: ${visited.size}`);
 }
-crawler();
+
