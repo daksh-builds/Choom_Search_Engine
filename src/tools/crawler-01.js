@@ -1,12 +1,12 @@
 import dotenv from 'dotenv';
-dotenv.config();
+
 import axios from "axios";
 import * as cheerio from "cheerio";
 import pool from '../../db/db.js';
 // ---- CONFIG ----
 
 const seed = "https://quotes.toscrape.com/";
-const maxCrawls = 100;
+const maxCrawls = 3;
 
 // ---- DATA STRUCTURES ----
 let queue = [seed];
@@ -70,3 +70,4 @@ await pool.query(
   console.log(`Total pages crawled: ${visited.size}`);
 }
 
+crawler();
