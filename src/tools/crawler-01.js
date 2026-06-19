@@ -6,7 +6,7 @@ import pool from '../../db/db.js';
 // ---- CONFIG ----
 
 const seed = "https://quotes.toscrape.com/";
-const maxCrawls = 3;
+const maxCrawls = 10;
 
 // ---- DATA STRUCTURES ----
 let queue = [seed];
@@ -31,13 +31,39 @@ let visited = new Set();//to remore duplicates
   }
 });
       const $ = cheerio.load(response.data);
+      let title = $('title').text().trim() || 'N/A';
+$('script,style,noscript').remove();
 
-let title = $('title').text().trim() || 'N/A';
-let discription = $('.quote .text').first().text().trim() || 'N/A';
+let discription = $('body')
+  .text()
+  .replace(/\s+/g, ' ')
+  .trim()
+  .slice(0, 1000);
+let quotes = [];
 
+$('.quote .text').each((i, el) => {
+  quotes.push($(el).text().trim());
+});
+let authors = [];
+
+$('.quote .author').each((i, el) => {
+  authors.push($(el).text().trim());
+});
+let tags = [];
+
+$('.tags a.tag').each((i, el) => {
+  tags.push($(el).text().trim());
+});
+
+let content = [
+  ...quotes,
+  ...authors,
+  ...tags
+].join(' ');
 await pool.query(
-  'INSERT INTO pages(url, title, discription) VALUES ($1, $2, $3)',
-  [currentURL, title, discription]
+  'INSERT INTO pages(url, title, discription, content) VALUES ($1, $2, $3, $4) ON CONFLICT(url) DO NOTHING',
+  
+  [currentURL, title, discription, content]
 );
 
       // ---- LINK EXTRACTION ----
@@ -50,9 +76,12 @@ await pool.query(
 
           // only wikipedia domain
           if (url.startsWith("https://quotes.toscrape.com/")) {
-            if (!visited.has(url)) {
-              queue.push(url);
-            }
+           if (
+  !visited.has(url) &&
+  !queue.includes(url)
+) {
+  queue.push(url);
+}
           }
 
 

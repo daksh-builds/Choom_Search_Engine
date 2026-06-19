@@ -1,7 +1,15 @@
 import pkg from 'pg';
 import {Pool} from 'pg';
 import dotenv from 'dotenv';
-dotenv.config({path:'../../.env'});
+
+
+
+dotenv.config();
+
+console.log("PASSWORD:", process.env.DB_PASSWORD);
+console.log("TYPE:", typeof process.env.DB_PASSWORD);
+
+
 const pool=new Pool(
   {
     host:process.env.DB_HOST,
