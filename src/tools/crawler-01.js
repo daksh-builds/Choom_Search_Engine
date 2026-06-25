@@ -5,16 +5,15 @@ import * as cheerio from "cheerio";
 import pool from '../../db/db.js';
 // ---- CONFIG ----
 
-const seed = "https://quotes.toscrape.com/";
-const maxCrawls = 10;
+const seed = "https://www.edudose.com/gk/";
+const maxCrawls = 20;
 
 // ---- DATA STRUCTURES ----
 let queue = [seed];
 let visited = new Set();//to remore duplicates
 
 // ---- MAIN LOOP ----
-
- export default async function crawler ()  {
+ async function crawler ()  {
   
   while (queue.length > 0 && visited.size < maxCrawls) {
     const currentURL = queue.shift();//Poping the first url and updating current url
@@ -75,7 +74,7 @@ await pool.query(
           url = new URL(url, currentURL).href;
 
           // only wikipedia domain
-          if (url.startsWith("https://quotes.toscrape.com/")) {
+          if (url.startsWith("https://www.edudose.com/")) {
            if (
   !visited.has(url) &&
   !queue.includes(url)
@@ -99,4 +98,3 @@ await pool.query(
   console.log(`Total pages crawled: ${visited.size}`);
 }
 
-crawler();
