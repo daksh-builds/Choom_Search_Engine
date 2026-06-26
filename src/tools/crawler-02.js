@@ -4,20 +4,35 @@ import pool from "../../db/db.js";
 
 // ---------------- CONFIG ----------------
 
-const seed = "https://www.edudose.com/gk/";
-const maxCrawls = 20;
+const seed = [
+  "https://www.edudose.com/gk/",
+  "https://www.geeksforgeeks.org/",
+  "https://developer.mozilla.org/",
+  "https://nodejs.org/en/docs/",
+  "https://www.britannica.com/",
+  "https://www.nasa.gov/",
+  "https://www.freecodecamp.org/news/",
+];
+
+const maxCrawls = 300;
 
 // ---------------- DATA STRUCTURES ----------------
 
-let queue = [seed];
+let queue = [...seed];
+let queued = new Set(seed);
 let visited = new Set();
 
 // ---------------- CRAWLER ----------------
 
 async function crawler() {
-  const domain = new URL(seed).origin;
+  const allowedDomains = new Set(
+    seed.map(url => new URL(url).origin)
+  );
 
-  while (queue.length > 0 && visited.size < maxCrawls) {
+  while (
+    queue.length > 0 &&
+    visited.size < maxCrawls
+  ) {
     const currentURL = queue.shift();
 
     if (visited.has(currentURL)) continue;
@@ -27,18 +42,24 @@ async function crawler() {
     console.log(`Crawling: ${currentURL}`);
 
     try {
-      const response = await axios.get(currentURL, {
-        headers: {
-          "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-        },
-      });
+      const response = await axios.get(
+        currentURL,
+        {
+          timeout: 10000,
+          headers: {
+            "User-Agent":
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+          },
+        }
+      );
 
       const $ = cheerio.load(response.data);
 
       // ---------------- TITLE ----------------
 
-      const title = $("title").text().trim() || "No Title";
+      const title =
+        $("title").text().trim() ||
+        "No Title";
 
       // ---------------- CLEAN PAGE ----------------
 
@@ -46,7 +67,7 @@ async function crawler() {
 
       // ---------------- DESCRIPTION ----------------
 
-      const discription = $("body")
+      const description = $("body")
         .text()
         .replace(/\s+/g, " ")
         .trim()
@@ -70,7 +91,7 @@ async function crawler() {
         [
           currentURL,
           title,
-          discription,
+          description,
           content,
         ]
       );
@@ -81,22 +102,54 @@ async function crawler() {
 
       $("a[href]").each((i, el) => {
         try {
-          let url = $(el).attr("href");
+          let href = $(el).attr("href");
 
-          url = new URL(url, currentURL).href;
+          if (!href) return;
 
-          // only crawl same website
+          const parsed = new URL(
+            href,
+            currentURL
+          );
 
-          if (url.startsWith(domain)) {
-            if (
-              !visited.has(url) &&
-              !queue.includes(url)
-            ) {
-              queue.push(url);
-            }
+          // Remove fragments
+          parsed.hash = "";
+
+          // Remove query params
+          parsed.search = "";
+
+          const normalizedUrl =
+            parsed.href;
+
+          // Skip media/files
+          if (
+            /\.(jpg|jpeg|png|gif|svg|webp|pdf|zip|rar|7z|mp4|mp3)$/i.test(
+              normalizedUrl
+            )
+          ) {
+            return;
+          }
+
+          // Crawl only allowed domains
+          if (
+            allowedDomains.has(
+              parsed.origin
+            ) &&
+            !visited.has(
+              normalizedUrl
+            ) &&
+            !queued.has(
+              normalizedUrl
+            )
+          ) {
+            queue.push(
+              normalizedUrl
+            );
+            queued.add(
+              normalizedUrl
+            );
           }
         } catch (err) {
-          // ignore invalid urls
+          // Ignore bad URLs
         }
       });
     } catch (err) {
@@ -112,6 +165,13 @@ async function crawler() {
     `Total pages crawled: ${visited.size}`
   );
 }
+
 crawler()
-  .then(() => console.log("Crawling Finished"))
-  .catch(err => console.error(err));
+  .then(() =>
+    console.log(
+      "Crawling Finished"
+    )
+  )
+  .catch(err =>
+    console.error(err)
+  );

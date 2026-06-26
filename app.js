@@ -25,7 +25,7 @@ app.set('views', path.join(__dirname, 'src', 'views'));
 connecting();
 
 app.use('/api', Mainroute);
-app.use('/api/Search', SearchRoute);
+app.use('/api', SearchRoute);
 
 app.listen(PORT, () => {
   console.log(`Server started at ${PORT}`);

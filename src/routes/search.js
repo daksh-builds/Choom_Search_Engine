@@ -8,11 +8,11 @@ route.get("/", (req, res) => {
 });
 
 route.get("/search", async (req, res) => {
+
+      const q = req.query.q;
+
     try {
         
-console.log("QUERY =", req.query);
-    console.log("Q =", req.query.q);
-      const q = req.query.q;
 
         const result = await pool.query(
             `
@@ -32,7 +32,7 @@ LIMIT 20;
             [q]
         );
 
-        res.render("results",{
+        res.render("result",{
           query:q,
           results:result.rows
         });

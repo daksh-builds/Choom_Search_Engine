@@ -6,10 +6,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-console.log("PASSWORD:", process.env.DB_PASSWORD);
-console.log("TYPE:", typeof process.env.DB_PASSWORD);
-
-
+console.log(process.cwd());
 const pool=new Pool(
   {
     host:process.env.DB_HOST,
