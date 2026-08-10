@@ -27,7 +27,7 @@ app.set('views', path.join(__dirname, 'src', 'views'));
 // database connection
 connecting();
 
-app.use('/api', Mainroute);
+app.use('/', Mainroute);
 app.use('/api', SearchRoute);
 
 app.listen(PORT, () => {
