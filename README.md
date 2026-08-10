@@ -136,6 +136,3 @@ http://localhost:3000/api
 
 ---
 
-## License
-
-This project is licensed under the [ISC License](LICENSE).

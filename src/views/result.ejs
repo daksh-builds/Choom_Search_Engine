@@ -1,144 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHOOM — Results</title>
 
-<title>Results</title>
-
-<style>
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, Helvetica, sans-serif;
-}
-
-body{
-    background:#f5f5f5;
-}
-
-.top-bar{
-    background:white;
-    padding:20px;
-    box-shadow:0 2px 10px rgba(0,0,0,.1);
-}
-
-form{
-    display:flex;
-    gap:10px;
-}
-
-input{
-    flex:1;
-    padding:12px;
-    border:1px solid #ccc;
-    border-radius:8px;
-}
-
-button{
-    padding:12px 20px;
-    border:none;
-    background:#4285f4;
-    color:white;
-    border-radius:8px;
-    cursor:pointer;
-}
-
-.results{
-    width:90%;
-    max-width:1000px;
-    margin:30px auto;
-}
-
-.result-card{
-    background:white;
-    padding:20px;
-    margin-bottom:15px;
-    border-radius:10px;
-    box-shadow:0 2px 5px rgba(0,0,0,.08);
-}
-
-.result-card a{
-    text-decoration:none;
-    color:#1a0dab;
-    font-size:22px;
-    font-weight:bold;
-}
-
-.url{
-    color:green;
-    margin-top:5px;
-    display:block;
-}
-
-.rank{
-    margin-top:10px;
-    color:#666;
-}
-
-.no-result{
-    text-align:center;
-    margin-top:50px;
-    font-size:22px;
-}
-
-</style>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
+
 <body>
 
-<div class="top-bar">
+<main class="container">
+
+    <h1 class="logo">CHOOM!</h1>
+
+    <div class="divider"></div>
 
     <form action="/api/search" method="GET">
 
-        <input
-            type="text"
-            name="q"
-            value="<%= query %>"
-            placeholder="Search..."
-        >
+        <div class="search-box">
 
-        <button type="submit">
-            Throw it 
-        </button>
+            <input
+                type="text"
+                name="q"
+                value="<%= query %>"
+                placeholder="Search..."
+            >
+
+            <button type="submit">
+                Throw it
+            </button>
+
+        </div>
 
     </form>
 
-</div>
+    <div class="divider"></div>
 
-<div class="results">
+    <div class="results-header">
 
-<% if(results.length === 0){ %>
+        <h2 class="results-title">
+            SEARCH <span>RESULTS</span>
+        </h2>
 
-    <div class="no-result">
-        No Results Found
-    </div>
-
-<% } %>
-
-<% results.forEach(result => { %>
-
-    <div class="result-card">
-
-        <a href="<%= result.url %>" target="_blank">
-            <%= result.title || "Untitled Page" %>
-        </a>
-
-        <span class="url">
-            <%= result.url %>
-        </span>
-
-        <div class="rank">
-            Relevance Score:
-            <%= Number(result.rank).toFixed(4) %>
+        <div class="system-status">
+            ONLINE
         </div>
 
     </div>
 
-<% }) %>
+    <% if(results.length === 0){ %>
 
-</div>
+        <div class="no-result">
+            No Results Found
+        </div>
+
+    <% } %>
+
+    <% results.forEach(result => { %>
+
+        <div class="result-card">
+
+            <a href="<%= result.url %>" target="_blank">
+                <%= result.title || "Untitled Page" %>
+            </a>
+
+            <span class="url">
+                <%= result.url %>
+            </span>
+
+            <div class="rank">
+                Relevance Score:
+                <%= Number(result.rank).toFixed(4) %>
+            </div>
+
+        </div>
+
+    <% }) %>
+
+</main>
 
 </body>
 </html>

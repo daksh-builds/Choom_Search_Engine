@@ -16,7 +16,7 @@ const seed = [
 
 const maxCrawls = 300;
 
-// ---------------- DATA STRUCTURES ----------------
+
 
 let queue = [...seed];
 let queued = new Set(seed);
