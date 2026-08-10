@@ -1,138 +1,139 @@
-# 🚀 CHOOM Search Engine
+# CHOOM — Search Engine
 
-CHOOM is a full-featured web crawler and search engine application built with **Node.js (ES Modules)**, **Express.js**, **PostgreSQL Full-Text Search**, and **EJS**. It autonomously crawls target websites, extracts and cleans web content, stores indexed page metadata into PostgreSQL, and exposes a web interface that ranks query results using PostgreSQL's native `ts_rank` and `websearch_to_tsquery`.
+CHOOM is a search engine built from scratch using **Node.js, Express, PostgreSQL Full-Text Search, and EJS**.
 
----
+It crawls web pages, extracts and indexes their content, and returns ranked search results using PostgreSQL's native search capabilities.
 
 ## Features
 
-- **Custom Web Crawlers**: Built with `axios` and `cheerio`. Supports multi-domain crawling, normalized URL resolution, media filtering, and configurable page limits (up to 300+ pages).
-- 🔍 **Full-Text Search Engine**: Employs PostgreSQL's text search capabilities (`tsvector`, `ts_rank`, `websearch_to_tsquery`) to return relevant results ordered by ranking score.
-- **Minimalist EJS UI**: Clean search page and dynamic results layout displaying page titles, URLs, descriptions, and calculated relevance scores.
-- **Duplicate & Loop Prevention**: Normalized URL tracking and unique constraint handling (`ON CONFLICT (url) DO NOTHING`).
-- **Modular Architecture**: Well-structured directory design with separated routers, views, database handlers, and crawler utilities.
+- Custom multi-domain web crawler
+- FIFO crawling with duplicate URL prevention
+- URL normalization and link discovery
+- HTML extraction using Axios and Cheerio
+- PostgreSQL Full-Text Search
+- `tsvector` + GIN indexing
+- Relevance ranking with `ts_rank`
+- User-friendly queries with `websearch_to_tsquery`
+- Server-side rendered UI with EJS
+- Deployed with Render + Neon
 
----
+## How It Works
+
+```text
+Websites
+   ↓
+Crawler
+   ↓
+PostgreSQL
+   ↓
+Full-Text Search
+   ↓
+Relevance Ranking
+   ↓
+Search Results
+```
+
+The crawler starts from predefined seed URLs, discovers and normalizes links, prevents duplicates, and stores page content in PostgreSQL.
+
+When a user searches, PostgreSQL's Full-Text Search finds matching pages and ranks them using `ts_rank`.
 
 ## Tech Stack
 
-- **Backend Framework**: Node.js, Express.js (ES Modules)
-- **Database**: PostgreSQL (`pg` pool)
-- **Web Scraping / Crawling**: Axios, Cheerio
-- **Template Engine**: EJS
-- **Development Tools**: Nodemon, Dotenv
-
----
+- **Runtime:** Node.js
+- **Backend:** Express.js
+- **Database:** PostgreSQL
+- **Search:** PostgreSQL Full-Text Search
+- **Crawler:** Axios + Cheerio
+- **Templates:** EJS
+- **Deployment:** Render
+- **Database Hosting:** Neon
 
 ## Project Structure
 
-```
-CHOOM-search engine/
-├── .env                  # Database credentials & server configuration
-├── .gitignore            # Files ignored by Git
-├── app.js                # Application entry point & Express server setup
-├── package.json          # Node.js dependencies & scripts
-├── README.md             # Project documentation
+```text
+CHOOM-search-engine/
+├── app.js
+├── package.json
 ├── db/
-│   ├── data.sql          # PostgreSQL table schema definition
-│   └── db.js             # Database pool connection instance
+│   ├── db.js
+│   └── data.sql
+├── public/
+│   └── css/
+│       └── style.css
 └── src/
     ├── controller/
-    │   └── connect.js    # Database connection verification utility
     ├── routes/
-    │   ├── home.js       # Home page router (`/api/`)
-    │   └── search.js     # Search query router (`/api/search`)
     ├── tools/
-    │   ├── crawler-01.js # Basic single-domain web crawler tool
-    │   └── crawler-02.js # Advanced multi-domain crawler (up to 300 pages)
+    │   ├── crawler-01.js
+    │   └── crawler-02.js
     └── views/
-        ├── index.ejs     # Main search page view
-        └── result.ejs    # Search results page view
+        ├── index.ejs
+        └── result.ejs
 ```
 
----
+## Run Locally
 
-## Installation & Setup
+### Install dependencies
 
-### 1. Prerequisites
-Ensure you have the following installed:
-- [Node.js](https://nodejs.org/) (v18 or higher)
-- [PostgreSQL](https://www.postgresql.org/)
-
-### 2. Clone & Install Dependencies
 ```bash
-git clone https://github.com/yourusername/CHOOM-search-engine.git
-cd "CHOOM-search engine"
 npm install
 ```
 
-### 3. Environment Configuration
-Create a `.env` file in the root directory and define your PostgreSQL credentials:
+### Configure environment variables
+
+Create a `.env` file:
 
 ```env
+DATABASE_URL=your_postgresql_connection_string
 PORT=3000
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=your_postgres_user
-DB_PASSWORD=your_postgres_password
-DB_NAME=choom_db
 ```
 
-### 4. Database Setup
-Execute the table creation schema in your PostgreSQL database:
+### Set up the database
 
-```sql
-CREATE TABLE IF NOT EXISTS pages (
-  id SERIAL PRIMARY KEY NOT NULL,
-  url TEXT UNIQUE NOT NULL,
-  title TEXT NOT NULL,
-  discription TEXT NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+Run the schema provided in:
+
+```text
+db/data.sql
 ```
 
----
-
-## Usage
-
-### 1. Run the Web Crawler
-Populate your database with page data using the included multi-domain web crawler:
+### Crawl and index pages
 
 ```bash
 node src/tools/crawler-02.js
 ```
 
-### 2. Start the Application Server
-Run the Express application using Nodemon:
+### Start CHOOM
 
 ```bash
 npm run dev
 ```
 
-### 3. Access the Search Engine
-Open your browser and navigate to:
+Open:
+
+```text
+http://localhost:3000
 ```
-http://localhost:3000/api
-```
+
+## Engineering Highlights
+
+- **O(1) duplicate tracking** using JavaScript `Set`
+- **FIFO crawl queue** for predictable crawling
+- **URL normalization** using the native `URL` API
+- **Idempotent ingestion** with `ON CONFLICT`
+- **GIN indexing** for PostgreSQL Full-Text Search
+- **Connection pooling** using `pg`
+- **Server-side rendering** with Express + EJS
+
+## Future Improvements
+
+- [ ] PageRank-based ranking
+- [ ] `robots.txt` support
+- [ ] Crawl rate limiting
+- [ ] Search snippets and highlighting
+- [ ] Pagination
+- [ ] Background crawl scheduling
+- [ ] Distributed crawling
 
 ---
 
-## API Routes
-
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/api/` | Renders the main search UI (`index.ejs`) |
-| `GET` | `/api/search?q=<query>` | Performs PostgreSQL full-text search & renders results with relevance scores (`result.ejs`) |
-
----
-
-## Future Enhancements
-
-- [ ] Add PageRank algorithm for enhanced link-based ranking.
-- [ ] Implement crawler rate-limiting & `robots.txt` parser compliance.
-- [ ] Add keyword highlighting in search snippets.
-- [ ] Support pagination for search results.
-- [ ] Add background crawler task scheduling.
-
----
-
+Built to understand how search engines work from the ground up.
